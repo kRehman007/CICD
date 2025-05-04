@@ -1,32 +1,40 @@
 pipeline {
     agent any
 
-    
+    tools {
+        nodejs 'NodeJS' // configure NodeJS under Jenkins tools
+    }
 
     stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/kRehman007/CICD.git'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                dir('F:/Web Development/CICD') {
-                    bat 'npm install'
+                sh 'npm install'
+            }
+        }
+
+        stage('SonarQube Scan') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
                 }
             }
         }
 
-        stage('Build React App') {
+        stage('Build Docker Image') {
             steps {
-                dir('F:/Web Development/CICD') {
-                    bat 'npm run build'
-                }
+                sh 'docker build -t react-app .'
             }
         }
 
-        stage('Run SonarQube Analysis') {
+        stage('Run Docker Container') {
             steps {
-                dir('F:/Web Development/CICD') {
-                    withSonarQubeEnv('SonarQube') {
-                        bat 'sonar-scanner'
-                    }
-                }
+                sh 'docker run -d -p 5173:5173 react-app'
             }
         }
     }

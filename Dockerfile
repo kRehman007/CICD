@@ -1,13 +1,12 @@
 # Dockerfile
-FROM node:16
+FROM node:18
 
 WORKDIR /app
 
 COPY package.json ./
-COPY package-lock.json ./
 RUN npm install
 
 COPY . ./
 
-EXPOSE 173
-CMD ["npm", "start"]
+EXPOSE 5173
+CMD ["npm", "run", "dev"]
